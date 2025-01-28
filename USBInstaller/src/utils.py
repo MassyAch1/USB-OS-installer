@@ -26,10 +26,25 @@ def format_usb_drive(drive):
     
     try:
         if platform.system() == "Windows":
-            # Format command for Windows
-            subprocess.run(["format", drive, "/FS:NTFS", "/Q", "/Y"], check=True)
+            # Use diskpart to format the drive on Windows
+            script = f"""
+            select volume {drive[0]}
+            clean
+            create partition primary
+            format fs=ntfs quick
+            assign
+            """
+            script_file = "format_script.txt"
+            with open(script_file, "w") as f:
+                f.write(script)
+            subprocess.run(["diskpart", "/s", script_file], check=True)
+            os.remove(script_file)
         else:
-            # Format command for Linux
+            # Use mkfs.vfat to format the drive on Linux/Mac
+            # Ensure the drive is unmounted first
+            subprocess.run(["umount", drive], stderr=subprocess.DEVNULL)
             subprocess.run(["mkfs.vfat", drive], check=True)
-    except Exception as e:
+    except subprocess.CalledProcessError as e:
         raise RuntimeError(f"Failed to format the drive: {e}")
+    except Exception as e:
+        raise RuntimeError(f"An unexpected error occurred: {e}")
