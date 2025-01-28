@@ -14,7 +14,7 @@ A simple application to install operating systems like Windows or Linux on a USB
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/MassyAch1/USBpro.git
+   git clone https://github.com/MassyAch1/USB-OS-installer.git
    cd USBInstaller
    ```
 
